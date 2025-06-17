@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordinal Numbers 1-10 Racing Game - Enhanced</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(to bottom, #87CEEB, #98FB98);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        /* Score Dashboard */
+        .score-dashboard {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            flex-wrap: wrap;
+        }
+
+        .score-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            margin: 5px;
+            min-width: 150px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .score-item h3 {
+            margin: 0;
+            color: #666;
+            font-size: 1em;
+        }
+
+        .score-item .points {
+            font-size: 2em;
+            color: #4CAF50;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .total-score {
+            background: #FFE4B5 !important;
+            border: 2px solid #FFA500;
+        }
+
+        /* Navigation */
+        .navigation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .nav-arrow {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-arrow:hover {
+            background: #45a049;
+            transform: scale(1.1);
+        }
+
+        .nav-arrow:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .activity-title {
+            font-size: 1.5em;
+            color: #333;
+            font-weight: bold;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        /* Sound Control */
+        .sound-control {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5em;
+            z-index: 1000;
+        }
+
+        .question {
+            background: #FFE4B5;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        /* Race Track for Activity 1 */
+        .race-track {
+            background: #333;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+            margin-bottom: 30px;
+            max-height: 700px;
+            overflow-y: auto;
+        }
+
+        .finish-line {
+            position: absolute;
+            right: 30px;
+            top: 0;
+            bottom: 0;
+            width: 30px;
+            background: repeating-linear-gradient(
+                to bottom,
+                white 0px,
+                white 10px,
+                black 10px,
+                black 20px
+            );
+        }
+
+        .car-container {
+            position: relative;
+            height: 60px;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
+
+        .car {
+            position: absolute;
+            width: 100px;
+            height: 50px;
+            top: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .car:hover {
+            transform: scale(1.1);
+        }
+
+        .car-body {
+            width: 80px;
+            height: 35px;
+            border-radius: 10px;
+            margin: 5px auto;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .car-body::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            width: 20px;
+            height: 15px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+        }
+
+        .wheels {
+            position: absolute;
+            bottom: 0;
+            left: 15px;
+            right: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .wheel {
+            width: 15px;
+            height: 15px;
+            background: #222;
+            border-radius: 50%;
+            border: 2px solid #555;
+        }
+
+        /* Feedback */
+        .feedback {
+            text-align: center;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            font-size: 1.5em;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #90EE90;
+            color: #006400;
+        }
+
+        .feedback.wrong {
+            background: #FFB6C1;
+            color: #8B0000;
+        }
+
+        /* Activity */
+        .activity {
+            display: none;
+        }
+
+        .activity.active {
+            display: block;
+        }
+
+        /* Parking Lot */
+        .parking-lot {
+            background: #ddd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .parking-spots {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .parking-spot {
+            width: 100%;
+            height: 80px;
+            border: 3px dashed #666;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            background: white;
+        }
+
+        .parking-spot.filled {
+            background: #90EE90;
+            border-style: solid;
+        }
+
+        .cars-to-drag {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .draggable-car {
+            margin: 10px;
+            cursor: move;
+        }
+
+        .car-label {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 5px;
+            background: #FFE4B5;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        /* Activity 3: Live Race */
+        .live-race-track {
+            background: linear-gradient(to bottom, #666 0%, #333 100%);
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .road-markings {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: repeating-linear-gradient(
+                to right,
+                white 0px,
+                white 20px,
+                transparent 20px,
+                transparent 40px
+            );
+        }
+
+        .racing-car {
+            position: absolute;
+            width: 80px;
+            height: 40px;
+            transition: left 2s ease-in-out;
+        }
+
+        .racing-car-body {
+            width: 60px;
+            height: 30px;
+            border-radius: 10px;
+            margin: 5px auto;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .red-car { background: #FF4444; }
+        .blue-car { background: #4444FF; }
+        .yellow-car { background: #FFD700; }
+
+        .answer-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .answer-btn {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #4CAF50;
+            color: white;
+            font-weight: bold;
+        }
+
+        .answer-btn:hover {
+            transform: scale(1.05);
+            background: #45a049;
+        }
+
+        .answer-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .race-markers {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .quarter-mark { left: 25%; }
+        .half-mark { left: 50%; }
+        .finish-mark { 
+            right: 50px; 
+            width: 30px;
+            background: repeating-linear-gradient(
+                to bottom,
+                white 0px,
+                white 10px,
+                black 10px,
+                black 20px
+            );
+        }
+
+        @media (max-width: 768px) {
+            .parking-spots {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .answer-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="sound-control" onclick="toggleSound()">🔊</button>
+        
+        <h1>🏁 Ordinal Numbers 1-10 Racing Game 🏁</h1>
+        
+        <!-- Score Dashboard -->
+        <div class="score-dashboard">
+            <div class="score-item">
+                <h3>Activity 1</h3>
+                <div class="points" id="score1">0</div>
+                <small>Find Position</small>
+            </div>
+            <div class="score-item">
+                <h3>Activity 2</h3>
+                <div class="points" id="score2">0</div>
+                <small>Parking</small>
+            </div>
+            <div class="score-item">
+                <h3>Activity 3</h3>
+                <div class="points" id="score3">0</div>
+                <small>Live Race</small>
+            </div>
+            <div class="score-item total-score">
+                <h3>Total Score</h3>
+                <div class="points" id="totalScore">0</div>
+                <small>Great Job!</small>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-arrow" id="prevBtn" onclick="previousActivity()" disabled>◀</button>
+            <div class="activity-title" id="activityTitle">Find the Position</div>
+            <button class="nav-arrow" id="nextBtn" onclick="nextActivity()">▶</button>
+        </div>
+
+        <!-- Activity 1: Find Position -->
+        <div id="activity1" class="activity active">
+            <div class="question" id="question1">Loading...</div>
+            
+            <div class="race-track" id="track1">
+                <div class="finish-line"></div>
+                <!-- 10 cars will be added here -->
+            </div>
+
+            <div id="feedback1" class="feedback"></div>
+        </div>
+
+        <!-- Activity 2: Parking -->
+        <div id="activity2" class="activity">
+            <div class="question">Drag each car to its matching parking spot!</div>
+            
+            <div class="parking-lot">
+                <div class="parking-spots" id="parkingSpots">
+                    <!-- 10 parking spots -->
+                </div>
+                
+                <div class="cars-to-drag" id="carsArea">
+                    <!-- 10 draggable cars -->
+                </div>
+            </div>
+
+            <div id="feedback2" class="feedback"></div>
+        </div>
+
+        <!-- Activity 3: Live Race -->
+        <div id="activity3" class="activity">
+            <div class="question" id="raceQuestion">Watch the race and answer the questions!</div>
+            
+            <div class="live-race-track" id="liveRaceTrack">
+                <div class="race-markers quarter-mark"></div>
+                <div class="race-markers half-mark"></div>
+                <div class="race-markers finish-mark"></div>
+                <div class="road-markings"></div>
+                <!-- 3 racing cars will be added here -->
+            </div>
+
+            <div class="answer-buttons" id="answerButtons">
+                <button class="answer-btn" onclick="checkRaceAnswer('1st')">1st Place</button>
+                <button class="answer-btn" onclick="checkRaceAnswer('2nd')">2nd Place</button>
+                <button class="answer-btn" onclick="checkRaceAnswer('3rd')">3rd Place</button>
+            </div>
+
+            <div id="feedback3" class="feedback"></div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let currentActivity = 1;
+        let scores = { activity1: 0, activity2: 0, activity3: 0 };
+        let soundEnabled = true;
+        let activity1Questions = 0;
+        let askedPositions = [];
+        let parkingCompleted = 0;
+        let consecutiveCorrect = 0;
+        let raceStage = 0;
+        let currentRacePositions = [];
+        let targetCar = '';
+        let correctRaceAnswer = '';
+
+        const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', 
+                       '#F7DC6F', '#B39BC8', '#F172A1', '#7FB3D5', '#C3E88D'];
+        const ordinals = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'];
+        const raceCarColors = {
+            'red': '#FF4444',
+            'blue': '#4444FF',
+            'yellow': '#FFD700'
+        };
+
+        // Speech synthesis
+        const synth = window.speechSynthesis;
+
+        function speak(text, callback, enthusiasm) {
+            if (!soundEnabled) {
+                if (callback) callback();
+                return;
+            }
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            utterance.pitch = enthusiasm ? 1.0 + (enthusiasm * 0.1) : 1.0;
+            utterance.volume = 1;
+            
+            if (callback) {
+                utterance.onend = callback;
+            }
+            
+            synth.speak(utterance);
+        }
+
+        function playBetterApplause() {
+            if (!soundEnabled) return;
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const duration = 2;
+                const sampleRate = audioContext.sampleRate;
+                const numSamples = duration * sampleRate;
+                
+                // Create multiple applause layers
+                const buffer = audioContext.createBuffer(2, numSamples, sampleRate);
+                const leftChannel = buffer.getChannelData(0);
+                const rightChannel = buffer.getChannelData(1);
+                
+                // Generate applause sound with multiple frequencies
+                for (let i = 0; i < numSamples; i++) {
+                    const envelope = Math.sin((i / numSamples) * Math.PI);
+                    const noise = (Math.random() - 0.5) * 0.3;
+                    
+                    // Add multiple frequency components for richer sound
+                    const clap1 = Math.sin(i * 0.01) * (Math.random() > 0.98 ? 1 : 0);
+                    const clap2 = Math.sin(i * 0.015) * (Math.random() > 0.97 ? 1 : 0);
+                    const crowd = Math.sin(i * 0.001) * 0.1;
+                    
+                    leftChannel[i] = (noise + clap1 + crowd) * envelope * 0.5;
+                    rightChannel[i] = (noise + clap2 + crowd) * envelope * 0.5;
+                }
+                
+                const source = audioContext.createBufferSource();
+                source.buffer = buffer;
+                
+                // Add reverb effect
+                const convolver = audioContext.createConvolver();
+                const reverbLength = sampleRate * 0.5;
+                const reverbBuffer = audioContext.createBuffer(2, reverbLength, sampleRate);
+                for (let i = 0; i < reverbLength; i++) {
+                    reverbBuffer.getChannelData(0)[i] = (Math.random() - 0.5) * Math.pow(1 - i / reverbLength, 2);
+                    reverbBuffer.getChannelData(1)[i] = (Math.random() - 0.5) * Math.pow(1 - i / reverbLength, 2);
+                }
+                convolver.buffer = reverbBuffer;
+                
+                source.connect(convolver);
+                convolver.connect(audioContext.destination);
+                source.start();
+            } catch (e) {
+                console.error('Audio error:', e);
+            }
+        }
+
+        function playCarSound() {
+            if (!soundEnabled) return;
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.frequency.value = 200;
+                oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.1);
+                
+                gainNode.gain.value = 0.3;
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.1);
+            } catch (e) {
+                console.error('Audio error:', e);
+            }
+        }
+
+        // Initialize
+        function init() {
+            setupActivity1();
+            updateScoreDisplay();
+            updateNavigation();
+        }
+
+        // Sound toggle
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.querySelector('.sound-control').textContent = soundEnabled ? '🔊' : '🔇';
+        }
+
+        // Score and navigation
+        function updateScoreDisplay() {
+            document.getElementById('score1').textContent = scores.activity1;
+            document.getElementById('score2').textContent = scores.activity2;
+            document.getElementById('score3').textContent = scores.activity3;
+            document.getElementById('totalScore').textContent = 
+                scores.activity1 + scores.activity2 + scores.activity3;
+        }
+
+        function updateNavigation() {
+            const titles = ['Find the Position', 'Parking Challenge', 'Live Race'];
+            document.getElementById('activityTitle').textContent = titles[currentActivity - 1];
+            document.getElementById('prevBtn').disabled = currentActivity === 1;
+            document.getElementById('nextBtn').disabled = currentActivity === 3;
+        }
+
+        function previousActivity() {
+            if (currentActivity > 1) {
+                document.getElementById(`activity${currentActivity}`).classList.remove('active');
+                currentActivity--;
+                document.getElementById(`activity${currentActivity}`).classList.add('active');
+                updateNavigation();
+            }
+        }
+
+        function nextActivity() {
+            if (currentActivity < 3) {
+                document.getElementById(`activity${currentActivity}`).classList.remove('active');
+                currentActivity++;
+                document.getElementById(`activity${currentActivity}`).classList.add('active');
+                updateNavigation();
+                
+                if (currentActivity === 2 && document.getElementById('parkingSpots').children.length === 0) {
+                    setupActivity2();
+                } else if (currentActivity === 3) {
+                    setupActivity3();
+                }
+            }
+        }
+
+        // Activity 1: Find Position
+        function setupActivity1() {
+            const track = document.getElementById('track1');
+            track.innerHTML = '<div class="finish-line"></div>';
+            
+            // Create 10 cars
+            for (let i = 0; i < 10; i++) {
+                const container = document.createElement('div');
+                container.className = 'car-container';
+                
+                const car = document.createElement('div');
+                car.className = 'car';
+                car.style.left = (800 - i * 75) + 'px';
+                car.dataset.position = i + 1;
+                car.onclick = () => {
+                    playCarSound();
+                    checkAnswer1(i + 1);
+                };
+                
+                const carBody = document.createElement('div');
+                carBody.className = 'car-body';
+                carBody.style.backgroundColor = colors[i];
+                carBody.textContent = i + 1;
+                
+                const wheels = document.createElement('div');
+                wheels.className = 'wheels';
+                wheels.innerHTML = '<div class="wheel"></div><div class="wheel"></div>';
+                
+                car.appendChild(carBody);
+                car.appendChild(wheels);
+                container.appendChild(car);
+                track.appendChild(container);
+            }
+            
+            generateQuestion1();
+        }
+
+        function generateQuestion1() {
+            let position;
+            do {
+                position = Math.floor(Math.random() * 10) + 1;
+            } while (askedPositions.includes(position));
+            
+            askedPositions.push(position);
+            document.getElementById('question1').textContent = 
+                `Click on the car in ${ordinals[position - 1]} place!`;
+            document.getElementById('question1').dataset.answer = position;
+        }
+
+        function checkAnswer1(position) {
+            const correct = parseInt(document.getElementById('question1').dataset.answer);
+            const feedback = document.getElementById('feedback1');
+            
+            if (position === correct) {
+                scores.activity1 += 10;
+                activity1Questions++;
+                
+                feedback.textContent = `✅ Correct! That's the ${ordinals[position - 1]} place car!`;
+                feedback.className = 'feedback correct show';
+                
+                playBetterApplause();
+                
+                if (activity1Questions >= 5) {
+                    feedback.textContent += ' Great job! Try the next activity!';
+                } else {
+                    setTimeout(() => {
+                        feedback.classList.remove('show');
+                        generateQuestion1();
+                    }, 2000);
+                }
+            } else {
+                speak("Try again");
+                feedback.textContent = `❌ That's the ${ordinals[position - 1]} place car. Try again!`;
+                feedback.className = 'feedback wrong show';
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                }, 2000);
+            }
+            
+            updateScoreDisplay();
+        }
+
+        // Activity 2: Parking with Enthusiastic Voice
+        function setupActivity2() {
+            const spotsContainer = document.getElementById('parkingSpots');
+            const carsContainer = document.getElementById('carsArea');
+            
+            spotsContainer.innerHTML = '';
+            carsContainer.innerHTML = '';
+            parkingCompleted = 0;
+            consecutiveCorrect = 0;
+            
+            // Create 10 parking spots
+            for (let i = 0; i < 10; i++) {
+                const spot = document.createElement('div');
+                spot.className = 'parking-spot';
+                spot.textContent = ordinals[i];
+                spot.dataset.position = i + 1;
+                spot.ondrop = drop;
+                spot.ondragover = allowDrop;
+                spotsContainer.appendChild(spot);
+            }
+            
+            // Create 10 draggable cars (shuffled)
+            const positions = [];
+            for (let i = 1; i <= 10; i++) {
+                positions.push(i);
+            }
+            positions.sort(() => Math.random() - 0.5);
+            
+            positions.forEach(pos => {
+                const carWrapper = document.createElement('div');
+                carWrapper.className = 'draggable-car';
+                carWrapper.draggable = true;
+                carWrapper.dataset.position = pos;
+                carWrapper.id = `dragCar${pos}`;
+                carWrapper.ondragstart = drag;
+                
+                const car = document.createElement('div');
+                car.className = 'car';
+                car.style.position = 'relative';
+                
+                const carBody = document.createElement('div');
+                carBody.className = 'car-body';
+                carBody.style.backgroundColor = colors[pos - 1];
+                carBody.textContent = pos;
+                
+                const label = document.createElement('div');
+                label.className = 'car-label';
+                label.textContent = `${ordinals[pos - 1]} car`;
+                
+                car.appendChild(carBody);
+                carWrapper.appendChild(car);
+                carWrapper.appendChild(label);
+                
+                carsContainer.appendChild(carWrapper);
+            });
+        }
+
+        // Drag and drop
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("carId", ev.target.id);
+            ev.dataTransfer.setData("position", ev.target.dataset.position);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            const carId = ev.dataTransfer.getData("carId");
+            const draggedPosition = ev.dataTransfer.getData("position");
+            const spotPosition = ev.target.dataset.position;
+            
+            if (draggedPosition === spotPosition && !ev.target.classList.contains('filled')) {
+                ev.target.classList.add('filled');
+                document.getElementById(carId).style.display = 'none';
+                
+                scores.activity2 += 10;
+                parkingCompleted++;
+                consecutiveCorrect++;
+                updateScoreDisplay();
+                
+                const feedback = document.getElementById('feedback2');
+                
+                // Increase enthusiasm with consecutive correct answers
+                const enthusiasm = Math.min(consecutiveCorrect, 5);
+                const exclamations = ['Good!', 'Great!', 'Excellent!', 'Amazing!', 'Fantastic!', 'Incredible!'];
+                const exclamation = exclamations[Math.min(enthusiasm - 1, exclamations.length - 1)];
+                
+                speak(`${exclamation} That's the ${ordinals[draggedPosition - 1]} spot!`, () => {
+                    playBetterApplause();
+                }, enthusiasm / 5);
+                
+                feedback.textContent = `✅ ${exclamation}`;
+                feedback.className = 'feedback correct show';
+                
+                if (parkingCompleted === 10) {
+                    feedback.textContent = '🎉 All cars parked! You\'re a parking champion!';
+                    speak("Wow! All cars are parked! You're a parking champion!", null, 1);
+                }
+                
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                }, 1500);
+            } else {
+                consecutiveCorrect = 0;
+                speak("Try again");
+                const feedback = document.getElementById('feedback2');
+                feedback.textContent = '❌ Wrong spot! Try again!';
+                feedback.className = 'feedback wrong show';
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                }, 1500);
+            }
+        }
+
+        // Activity 3: Live Race
+        function setupActivity3() {
+            raceStage = 0;
+            setupRace();
+            setTimeout(() => startRace(), 1000);
+        }
+
+        function setupRace() {
+            const track = document.getElementById('liveRaceTrack');
+            
+            // Remove existing cars
+            const existingCars = track.querySelectorAll('.racing-car');
+            existingCars.forEach(car => car.remove());
+            
+            // Create 3 racing cars
+            const carNames = ['red', 'blue', 'yellow'];
+            const lanes = [80, 140, 200];
+            
+            carNames.forEach((color, index) => {
+                const car = document.createElement('div');
+                car.className = 'racing-car';
+                car.id = `${color}Car`;
+                car.style.top = `${lanes[index]}px`;
+                car.style.left = '20px';
+                
+                const carBody = document.createElement('div');
+                carBody.className = `racing-car-body ${color}-car`;
+                
+                const wheels = document.createElement('div');
+                wheels.className = 'wheels';
+                wheels.innerHTML = '<div class="wheel"></div><div class="wheel"></div>';
+                
+                car.appendChild(carBody);
+                car.appendChild(wheels);
+                track.appendChild(car);
+            });
+        }
+
+        function startRace() {
+            const positions = [25, 50, 100]; // Percentages for quarter, half, and finish
+            moveToPosition(positions[raceStage]);
+        }
+
+        function moveToPosition(percentage) {
+            const cars = ['red', 'blue', 'yellow'];
+            const speeds = [];
+            
+            // Generate random speeds for each car
+            cars.forEach(() => {
+                speeds.push(Math.random());
+            });
+            
+            // Sort to get positions
+            const sortedIndices = speeds
+                .map((speed, index) => ({ speed, index }))
+                .sort((a, b) => b.speed - a.speed)
+                .map(item => item.index);
+            
+            currentRacePositions = sortedIndices.map(idx => cars[idx]);
+            
+            // Move cars based on their speed
+            cars.forEach((color, index) => {
+                const car = document.getElementById(`${color}Car`);
+                const position = sortedIndices.indexOf(index);
+                const trackElement = document.querySelector('.live-race-track');
+                const trackWidth = trackElement ? trackElement.offsetWidth - 100 : 800;
+                const targetPosition = (trackWidth * percentage / 100) - (position * 20);
+                car.style.left = `${Math.max(20, targetPosition)}px`;
+            });
+            
+            // After movement, ask question
+            setTimeout(() => {
+                askRaceQuestion();
+            }, 2000);
+        }
+
+        function askRaceQuestion() {
+            const questionTexts = [
+                "The cars have reached the first quarter! Which position is the red car in?",
+                "They're at the halfway point! What position is the red car in now?",
+                "They've crossed the finish line! What was the red car's final position?"
+            ];
+            
+            targetCar = 'red';
+            const redPosition = currentRacePositions.indexOf('red');
+            correctRaceAnswer = ordinals[redPosition];
+            
+            document.getElementById('raceQuestion').textContent = questionTexts[raceStage];
+            speak(questionTexts[raceStage]);
+            
+            // Enable answer buttons
+            const buttons = document.querySelectorAll('.answer-btn');
+            buttons.forEach(btn => btn.disabled = false);
+        }
+
+        function checkRaceAnswer(answer) {
+            const feedback = document.getElementById('feedback3');
+            const buttons = document.querySelectorAll('.answer-btn');
+            buttons.forEach(btn => btn.disabled = true);
+            
+            if (answer === correctRaceAnswer) {
+                scores.activity3 += 10;
+                updateScoreDisplay();
+                
+                feedback.textContent = `✅ Correct! The red car is in ${correctRaceAnswer} place!`;
+                feedback.className = 'feedback correct show';
+                
+                playBetterApplause();
+                speak(`Excellent! The red car is in ${correctRaceAnswer} place!`, () => {
+                    setTimeout(() => {
+                        feedback.classList.remove('show');
+                        continueRace();
+                    }, 2000);
+                });
+            } else {
+                speak("Try again");
+                feedback.textContent = `❌ Not quite! The red car is in ${correctRaceAnswer} place.`;
+                feedback.className = 'feedback wrong show';
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                    buttons.forEach(btn => btn.disabled = false);
+                }, 2000);
+            }
+        }
+
+        function continueRace() {
+            raceStage++;
+            if (raceStage < 3) {
+                startRace();
+            } else {
+                const feedback = document.getElementById('feedback3');
+                feedback.textContent = '🎉 Race complete! You did an amazing job tracking the positions!';
+                feedback.className = 'feedback correct show';
+                speak("Congratulations! You completed all the racing challenges! You're a champion!", null, 1);
+            }
+        }
+
+        // Initialize the game
+        window.previousActivity = previousActivity;
+        window.nextActivity = nextActivity;
+        window.toggleSound = toggleSound;
+        window.checkAnswer1 = checkAnswer1;
+        window.drag = drag;
+        window.allowDrop = allowDrop;
+        window.drop = drop;
+        window.checkRaceAnswer = checkRaceAnswer;
+        
+        init();
+    </script>
+</body>
+</html>
